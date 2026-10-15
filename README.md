@@ -2,18 +2,28 @@
 
 Hourly uptime & latency monitoring of 20 Indonesian digital services (public services, e-commerce, banking, telco), with a Power BI SLA dashboard.
 
-The data is self-collected: a Python probe runs every hour on GitHub Actions, checks each homepage once, and appends the result to `data/checks.csv`. Power BI reads that file directly from GitHub and refreshes on a schedule.
+The data is self-collected: a Python probe runs every hour on GitHub Actions and checks each homepage once. Results are staged in this repo and loaded once a day into Azure SQL Database, which feeds a Power BI dashboard.
 
-## Architecture (Phase 1)
+## Architecture
 
 ```
-GitHub Actions (hourly cron)
-   └─ monitor.py  ──►  data/checks.csv (committed to this repo)
-                              │
-                              ▼
-          Power BI (Web connector → raw CSV URL)
-          scheduled refresh · SLA dashboard · mobile layout
+GitHub Actions — hourly           GitHub Actions — daily (22:31 UTC)
+  monitor.py                        load_to_sql.py
+     │                                 │  incremental, idempotent
+     ▼                                 ▼
+  data/checks.csv  ───────────►  Azure SQL Database (serverless, free offer)
+  sites.csv                            │  tables: checks, sites, user_sector_access
+                                       ▼
+                         Power BI Service — scheduled refresh,
+                         SLA dashboard, mobile layout
 ```
+
+- **Hourly probe** (`monitor.py`) appends results to `data/checks.csv` in this repo, which acts as the staging layer.
+- **Daily load** (`load_to_sql.py`) upserts `sites.csv` and inserts new check rows into Azure SQL. It re-reads the last day on every run and skips rows that already exist, so a re-run never creates duplicates.
+- **Least privilege:** the loader signs in as `loader_app`, a database user that can only read and insert check rows and maintain the site list. Credentials are stored as GitHub secrets.
+- **Why daily, not hourly:** the serverless database bills compute while it is awake and stays awake for about an hour after each connection. One load per day keeps usage well inside the monthly free allowance; loading every hour would keep it awake around the clock.
+
+Schema: [`sql/01_schema.sql`](sql/01_schema.sql) · loader user: [`sql/02_loader_user.sql`](sql/02_loader_user.sql)
 
 ## What the dashboard measures
 
@@ -56,12 +66,12 @@ GitHub Actions (hourly cron)
 - **Scheduling jitter:** GitHub may delay scheduled runs during high load, so checks are not exactly 60 min apart.
 - **Homepage only:** a working homepage does not mean login, payment or API services are working.
 - **Not an official SLA:** these figures are an independent outside-in measurement and do not represent any provider's own SLA reporting.
-- **Phase 1 refresh:** a CSV source does not support query folding, so Power BI incremental refresh gives little benefit until the data moves to SQL (Phase 2).
+- **Daily freshness:** the dashboard can be up to one day behind the hourly probe, by design (see Architecture).
 
-## Roadmap — Phase 2
+## Roadmap
 
-- Load the hourly CSV into Azure SQL Database once a day (auto-pause to stay within the free offer).
-- Power BI incremental refresh with `RangeStart`/`RangeEnd` and query folding.
+- Power BI incremental refresh with `RangeStart`/`RangeEnd` on `checked_at_utc`, folded to Azure SQL.
+- Dynamic row-level security by sector, driven by the `user_sector_access` table.
 
 ## Run locally
 
