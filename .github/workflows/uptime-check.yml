@@ -1,0 +1,49 @@
+name: uptime-check
+
+on:
+  schedule:
+    # Minute 7 of every hour (UTC). Avoids the busy top-of-hour slot.
+    - cron: "7 * * * *"
+  workflow_dispatch: # allows a manual run from the Actions tab
+
+permissions:
+  contents: write # needed to commit data/checks.csv
+
+concurrency:
+  group: uptime-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run probe
+        env:
+          PROBE_LOCATION: github-hosted
+        run: python monitor.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/checks.csv
+          if git diff --cached --quiet; then
+            echo "No new rows"; exit 0
+          fi
+          git commit -m "data: check $(date -u +'%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1
