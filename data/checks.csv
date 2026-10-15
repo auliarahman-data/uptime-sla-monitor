@@ -1,0 +1,21 @@
+run_id,checked_at_utc,site_id,url,outcome,status_code,response_ms,attempts,final_url,error,probe_location
+38685859591,2026-10-15 05:16:15,BNK01,https://www.bca.co.id/,UP,200,1010,1,https://www.bca.co.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,BNK02,https://bri.co.id/,UP,307,785,1,https://bri.co.id/web/guest,,github-hosted
+38685859591,2026-10-15 05:16:15,BNK03,https://www.bankmandiri.co.id/,DOWN,,,2,,ReadTimeout,github-hosted
+38685859591,2026-10-15 05:16:15,BNK04,https://www.bni.co.id/,UP,200,1502,1,https://www.bni.co.id/id-id/,,github-hosted
+38685859591,2026-10-15 05:16:15,BNK05,https://www.btn.co.id/,UP,200,3821,1,https://www.btn.co.id/id,,github-hosted
+38685859591,2026-10-15 05:16:15,ECM01,https://www.tokopedia.com/,DOWN,,,2,,ReadTimeout,github-hosted
+38685859591,2026-10-15 05:16:15,ECM02,https://shopee.co.id/,UP,200,1154,1,https://shopee.co.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,ECM03,https://www.blibli.com/,BLOCKED,403,165,1,https://www.blibli.com/,,github-hosted
+38685859591,2026-10-15 05:16:15,ECM04,https://www.lazada.co.id/,UP,200,662,1,https://www.lazada.co.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,ECM05,https://www.bukalapak.com/,DOWN,406,274,2,https://www.bukalapak.com/,,github-hosted
+38685859591,2026-10-15 05:16:15,GOV01,https://indonesia.go.id/,DOWN,,,2,,ConnectTimeout,github-hosted
+38685859591,2026-10-15 05:16:15,GOV02,https://www.pajak.go.id/,UP,200,1762,1,https://www.pajak.go.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,GOV03,https://www.bpjs-kesehatan.go.id/,UP,200,13986,1,https://www.bpjs-kesehatan.go.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,GOV04,https://www.bmkg.go.id/,UP,200,131,1,https://www.bmkg.go.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,GOV05,https://www.kemenkeu.go.id/,UP,200,8890,1,https://www.kemenkeu.go.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,TEL01,https://www.telkomsel.com/,UP,200,1349,1,https://www.telkomsel.com/,,github-hosted
+38685859591,2026-10-15 05:16:15,TEL02,https://www.indosatooredoo.com/,UP,200,2829,1,https://im3.id/portal/notfound/IM3/404_EN.html,,github-hosted
+38685859591,2026-10-15 05:16:15,TEL03,https://www.xl.co.id/,UP,200,1079,1,https://www.xl.co.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,TEL04,https://myrepublic.co.id/,UP,200,4486,1,https://www.myrepublic.co.id/,,github-hosted
+38685859591,2026-10-15 05:16:15,TEL05,https://www.biznetnetworks.com/,UP,200,1842,1,https://www.biznetnetworks.com/,,github-hosted
