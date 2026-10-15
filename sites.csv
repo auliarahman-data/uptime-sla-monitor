@@ -1,0 +1,21 @@
+site_id,site_name,sector,url
+GOV01,Indonesia.go.id,Public Services,https://indonesia.go.id/
+GOV02,DJP (Pajak),Public Services,https://www.pajak.go.id/
+GOV03,BPJS Kesehatan,Public Services,https://www.bpjs-kesehatan.go.id/
+GOV04,BMKG,Public Services,https://www.bmkg.go.id/
+GOV05,Kemenkeu,Public Services,https://www.kemenkeu.go.id/
+ECM01,Tokopedia,E-commerce,https://www.tokopedia.com/
+ECM02,Shopee,E-commerce,https://shopee.co.id/
+ECM03,Blibli,E-commerce,https://www.blibli.com/
+ECM04,Lazada,E-commerce,https://www.lazada.co.id/
+ECM05,Bukalapak,E-commerce,https://www.bukalapak.com/
+BNK01,BCA,Banking,https://www.bca.co.id/
+BNK02,BRI,Banking,https://bri.co.id/
+BNK03,Bank Mandiri,Banking,https://www.bankmandiri.co.id/
+BNK04,BNI,Banking,https://www.bni.co.id/
+BNK05,BTN,Banking,https://www.btn.co.id/
+TEL01,Telkomsel,Telco,https://www.telkomsel.com/
+TEL02,Indosat Ooredoo,Telco,https://www.indosatooredoo.com/
+TEL03,XL Axiata,Telco,https://www.xl.co.id/
+TEL04,MyRepublic,Telco,https://myrepublic.co.id/
+TEL05,Biznet,Telco,https://www.biznetnetworks.com/
