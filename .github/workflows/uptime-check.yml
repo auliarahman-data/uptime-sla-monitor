@@ -2,7 +2,7 @@ name: uptime-check
 
 on:
   schedule:
-    # Minute 7 of every hour (UTC). Avoids the busy top-of-hour slot.
+    # Minute 7 of every hour (UTC). Avoids the busy top-of-hour slot..
     - cron: "7 * * * *"
   workflow_dispatch: # allows a manual run from the Actions tab
 
