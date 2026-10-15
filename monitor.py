@@ -7,8 +7,8 @@ and appends one row per site to data/checks.csv.
 Outcome rules
 -------------
 UP       final HTTP status 2xx/3xx
-BLOCKED  401 / 403 / 429 - server answered but refused an automated request
-         (bot protection, geo-blocking, rate limit). Reachable, not "down".
+BLOCKED  401 / 403 / 406 / 429 - server answered but refused an automated
+         request (bot protection, WAF, geo-blocking, rate limit). Reachable, not "down".
 DOWN     any other 4xx/5xx, timeout, DNS, TLS or connection error
 """
 from __future__ import annotations
@@ -38,10 +38,12 @@ FIELDS = [
     "probe_location",
 ]
 
-BLOCKED_CODES = {401, 403, 429}
-USER_AGENT = (
-    "uptime-sla-monitor/1.0 (portfolio project; homepage check once per hour)"
-)
+BLOCKED_CODES = {401, 403, 406, 429}
+HEADERS = {
+    "User-Agent": "uptime-sla-monitor/1.0 (portfolio project; homepage check once per hour)",
+    "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",
+}
 
 
 def classify(status_code: int) -> str:
@@ -59,7 +61,7 @@ def probe_once(url: str, connect_timeout: float, read_timeout: float) -> dict:
     try:
         with requests.get(
             url,
-            headers={"User-Agent": USER_AGENT},
+            headers=HEADERS,
             timeout=(connect_timeout, read_timeout),
             allow_redirects=True,
             stream=True,  # do not download the full page body

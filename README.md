@@ -33,7 +33,7 @@ GitHub Actions (hourly cron)
 | `checked_at_utc` | Run timestamp, UTC (`yyyy-MM-dd HH:mm:ss`). Add 7 h for WIB. |
 | `site_id` | Joins to `sites.csv` (site name, sector) |
 | `url` | URL requested |
-| `outcome` | `UP` (2xx/3xx) · `BLOCKED` (401/403/429) · `DOWN` (other 4xx/5xx, timeout, DNS/TLS/connection error) |
+| `outcome` | `UP` (2xx/3xx) · `BLOCKED` (401/403/406/429) · `DOWN` (other 4xx/5xx, timeout, DNS/TLS/connection error) |
 | `status_code` | Final HTTP status code (empty when no response) |
 | `response_ms` | Latency in milliseconds (empty when no response) |
 | `attempts` | 1, or 2 when the first attempt failed and was retried after 10 s |
@@ -44,7 +44,8 @@ GitHub Actions (hourly cron)
 ## Design decisions
 
 - **Retry once before marking DOWN** — a single dropped connection should not count as an incident.
-- **BLOCKED is not DOWN** — a 403/429 means the server is up but refused an automated request (bot protection, geo-blocking, rate limiting). Counting it as downtime would make availability figures wrong.
+- **BLOCKED is not DOWN** — a 401/403/406/429 means the server is up but refused an automated request (bot protection, WAF, geo-blocking, rate limiting). Counting it as downtime would make availability figures wrong.
+- **Persistent timeouts are reviewed, not reported** — some sites silently drop automated or foreign traffic, which looks like a timeout. A site that is DOWN in almost every run is treated as unreachable from the probe location and replaced, because a real outage is intermittent.
 - **Headers only** — the probe stops after receiving response headers and does not download page content.
 - **Light load** — one request per site per hour, homepage only, with a User-Agent that identifies the project.
 
