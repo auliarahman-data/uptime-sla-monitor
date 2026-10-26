@@ -2,11 +2,14 @@
 
 Hourly uptime & latency monitoring of 20 Indonesian digital services (public services, e-commerce, banking, telco), with a Power BI SLA dashboard.
 
-The data is self-collected: a Python probe runs every hour on GitHub Actions and checks each homepage once. Results are staged in this repo and loaded once a day into Azure SQL Database, which feeds a Power BI dashboard.
+The data is self-collected: a Python probe runs every hour on GitHub Actions (started by an external cron trigger) and checks each homepage once. Results are staged in this repo and loaded once a day into Azure SQL Database, which feeds a Power BI dashboard.
 
 ## Architecture
 
 ```
+cron-job.org (minute :05, every hour)
+  │  POST workflow_dispatch
+  ▼
 GitHub Actions — hourly           GitHub Actions — daily (22:31 UTC)
   monitor.py                        load_to_sql.py
      │                                 │  incremental, idempotent
@@ -18,6 +21,7 @@ GitHub Actions — hourly           GitHub Actions — daily (22:31 UTC)
                          SLA dashboard, mobile layout
 ```
 
+- **External trigger:** [cron-job.org](https://cron-job.org) calls the GitHub API (`workflow_dispatch`) at minute 5 of every hour. GitHub's own `schedule` trigger was tried first but ran only about 4 to 6 of 24 slots per day, so it was removed.
 - **Hourly probe** (`monitor.py`) appends results to `data/checks.csv` in this repo, which acts as the staging layer.
 - **Daily load** (`load_to_sql.py`) upserts `sites.csv` and inserts new check rows into Azure SQL. It re-reads the last day on every run and skips rows that already exist, so a re-run never creates duplicates.
 - **Least privilege:** the loader signs in as `loader_app`, a database user that can only read and insert check rows and maintain the site list. Credentials are stored as GitHub secrets.
@@ -63,7 +67,7 @@ Schema: [`sql/01_schema.sql`](sql/01_schema.sql) · loader user: [`sql/02_loader
 
 - **Probe location:** GitHub-hosted runners are outside Indonesia. Latency reflects the path from the runner, not from Indonesian users, and some sites may block foreign or data-center traffic.
 - **Hourly resolution:** outages shorter than the check interval can be missed, and incident duration is an estimate rounded to whole hours.
-- **Scheduling jitter:** GitHub may delay scheduled runs during high load, so checks are not exactly 60 min apart.
+- **Scheduling jitter:** the external trigger is hourly, but a run can still start late or be missed (one hourly slot is missing since 18 Oct 2026), so checks are not exactly 60 min apart.
 - **Homepage only:** a working homepage does not mean login, payment or API services are working.
 - **Not an official SLA:** these figures are an independent outside-in measurement and do not represent any provider's own SLA reporting.
 - **Daily freshness:** the dashboard can be up to one day behind the hourly probe, by design (see Architecture).
